@@ -1,7 +1,7 @@
-nearAnalytics
+NEARAnalytics
 ==================
 
-This app was initialized with [create-near-app]
+TODO update README.md
 
 
 Quick Start
