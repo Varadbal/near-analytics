@@ -35,25 +35,24 @@ Now you'll have a local development environment backed by the NEAR TestNet!
 
 A proposed application of the contracts:
 
-1. call create_dataset
-2. call add_data (as many times as you need)
-3. call the various analytics functions (e.g. get_xmin, get_xmax, get_ypred) 
+1. initialize   
+   Example: `near call  <DEV_ACCOUNT> init '{"name":"<ANALYTICS_SERVICE_NAME>"}' --accountId <DEV_ACCOUNT> --amount <INT>=1>`
+3. create_dataset  
+   Example: `near call  <DEV_ACCOUNT> create_dataset '{"name":"<DATASET_NAME>", "description":"<DESCRIPTION>"}' --accountId <DEV_ACCOUNT> --amount <INT>=2>`
+5. add_data (as many times as you need)   
+   Example: `near call  <DEV_ACCOUNT> add_data '{"dataset":"<DATASET_NAME>", "x":<INT>, "y":<INT>}' --accountId <DEV_ACCOUNT>`
+7. call the various analytics functions (e.g. get_xmin, get_xmax, get_ypred)   
+   Example: `near call  <DEV_ACCOUNT> get_xmin '{"dataset":"<DATASET_NAME>"}' --accountId <DEV_ACCOUNT>`
 
-
+Where `<DEV_ACCOUNT>` represents your (own development) account, `<ANALYTICS_SERVICE_NAME>`, `<DATASET_NAME>`, `<DESCRIPTION>` are arbitrary strings and `<INT>` represents any integer number with the possbily given constraint. Note, that `<DATASET_NAME>` must be an eligible NEAR account name, as for each dataset, a separate account will be created.
 
 Exploring The Code
 ==================
+This project consists of two contracts. The Dataset contract (representing individual datasets contained in their own accounts), and the Analytics contract (responsible for creating and managing several dataset contracts). The users are interacting with the Analytics contract. The following figure summarizes this concept:
 
-1. The "backend" code lives in the `/contract` folder. See the README there for
-   more info.
-2. The frontend code lives in the `/src` folder. `/src/index.html` is a great
-   place to start exploring. Note that it loads in `/src/index.js`, where you
-   can learn how the frontend connects to the NEAR blockchain.
-3. Tests: there are different kinds of tests for the frontend and the smart
-   contract. See `contract/README` for info about how it's tested. The frontend
-   code gets tested with [jest]. You can run both of these at once with `yarn
-   run test`.
+![analysis concept figure](https://github.com/Varadbal/near-analytics/blob/main/docs/analytics_concept.png)
 
+In the following subsections, the details are elaborated on.
 
 Deploy
 ======
