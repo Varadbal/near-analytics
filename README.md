@@ -1,8 +1,23 @@
-NEARAnalytics
+NEAR Analytics
 ==================
 
-TODO update README.md
+This is a repository for the NEAR Certified Developer Program - NEAR Analytics project. 
 
+This project is the first step to bringing AI to the NEAR blockchain. It contains two interacting smart contracts, which enable data storage & analysis in addition to providing  a simple authorization mechanism.
+
+In short: users can create 2D datasets (for a small fee) and incrementally fill them with their data. These datasets then provide various data analysis techniques to the general public. Everything is stored on the blockchain, which makes data manipulation really difficult.
+
+Motivating Example
+===========
+Let's assume, that we work for a medical clinic. One day, we realize, that there may be a connection between the patients' BMI index and their progression of diabetes. Using the given contracts, we could easily create an application like this: 
+
+![diabetes app wireframe](https://github.com/Varadbal/near-analytics/blob/main/docs/diabetes_example.png)
+
+Just by adding an appropriate front-end, our application would be able to:
+- Manage multiple datasets,
+- Manage write-permissions,
+- Calculate basic descriptive statistics for the datasets, and even
+- Give a prediction to unknown values (by fitting a linear model).
 
 Quick Start
 ===========
@@ -11,12 +26,19 @@ To run this project locally:
 
 1. Prerequisites: Make sure you've installed [Node.js] ≥ 12
 2. Install dependencies: `yarn install`
-3. Run the local development server: `yarn dev` (see `package.json` for a
-   full list of `scripts` you can run with `yarn`)
+3. Build the project: `yarn build`
+4. (Log into your NEAR account: `near login`)
+5. Deploy the contracts: `near dev-deploy`
+6. Have fun!
 
 Now you'll have a local development environment backed by the NEAR TestNet!
 
-Go ahead and play with the app and the code. As you make code changes, the app will automatically reload.
+A proposed application of the contracts:
+
+1. call create_dataset
+2. call add_data (as many times as you need)
+3. call the various analytics functions (e.g. get_xmin, get_xmax, get_ypred) 
+
 
 
 Exploring The Code
