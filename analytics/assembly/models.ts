@@ -5,20 +5,8 @@ import {
     PersistentMap
 } from "near-sdk-as";
 
-//TODO
+
 import {AccountId, Data, Rational, Timestamp} from "../../types";
-//also in dataset/models.ts!
-/*export type AccountId = string;
-export type Data = u8;
-export type Timestamp = u64;
-@nearBindgen
-export class Decimal {
-    constructor(
-        public num : u8,
-        public factor : u8
-    ) {}
-}*/
-//////////////////////////////////
 
 export const ANALYTICS_KEY = "state"
 
