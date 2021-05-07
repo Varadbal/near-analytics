@@ -54,6 +54,33 @@ This project consists of two contracts. The Dataset contract (representing indiv
 
 In the following subsections, the details are elaborated on.
 
+Public Interfaces
+-------------------------------------
+### Analytics Contract
+- init(name : string) : void
+- get_analytics() : Analytics
+- create_dataset(name : string, description : string) : void
+- register_to_dataset(dataset : string) : void - *(not yet implemented)*
+- get_unapproved registrations() : Registration[] - *(not yet implemented)*
+- approve_registration(registration : Registration) - *(not yet implemented)*
+- add_data(dataset : string, x : u16, y : u16) : void
+- get_xmin(dataset : string) : u16
+- get_xmax(dataset : string) : u16
+- get_xmax(dataset : string) : Rational
+- get_ypred(dataset : string, x : u16) : Rational
+
+### Dataset Contract
+- init(name : string, description : string) : void
+- get_dataset() : DataSet
+- add_data_element(x : u16, y : u16) : void
+- is_data_mapped(x : u16) : bool
+- get_data_element(x : u16) : u16 
+- get_data_keys() : Data[]
+- min_x() : u16
+- max_x() : u16
+- avg_x() : Rational
+- pred_y(x : u16) : Rational 
+
 File System
 -------------------------------------
 
