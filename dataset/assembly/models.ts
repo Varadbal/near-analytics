@@ -78,34 +78,39 @@ export class DataSet {
         let sum : Data = 0;
         let count : Data = 0;
         let i : i8 = 0;
+        let xs = data_x.values();
         for(i = 0; i < data_x.size; i++) {
-            sum += data_y.getSome(data_x.values()[i]);
+            sum += data_y.getSome(xs[i]);
             count += 1;
         }
         return new Rational((sum * FACTOR) / count, FACTOR);
     }
 
     static pred_y(x_t : Data) : Rational {
+        // TODO make type conversion safe and ensure correctness
         assert(data_x.size > 0, "Dataset is empty");
 
         let n : Data = u16(data_x.size);  
-        let m_x : Rational = this.avg_x();
-        let m_y : Rational = this.avg_y();
+        let m_x : Data = this.avg_x().num;
+        let m_y : Data = this.avg_y().num;
 
-        let xy_sum : Data = 0;
-        let xx_sum : Data = 0;
+        let xy_sum : u32 = 0;
+        let xx_sum : u32 = 0;
         let i : i8 = 0;
+        let xs = data_x.values();
         for(i = 0; i < data_x.size; i++) {
-            xy_sum += data_x.values()[i] * data_y.getSome(data_x.values()[i]);
-            xx_sum += data_x.values()[i] * data_x.values()[i];
+            xy_sum += (xs[i] * 100) * (data_y.getSome(xs[i])*100);
+            xx_sum += (xs[i] * 100) * (xs[i] * 100);
         }
-        let ss_xy : Rational = new Rational (xy_sum*FACTOR - n*FACTOR*m_y.num*m_x.num, FACTOR);
-        let ss_xx : Rational = new Rational (xx_sum*FACTOR - n*FACTOR*m_x.num*m_x.num, FACTOR);
 
-        let b1 : Rational = new Rational(ss_xy.num / ss_xx.num, FACTOR);
-        let b0 : Rational = new Rational(m_y.num - b1.num*m_x.num, FACTOR);
+        let ss_xy : u32 = xy_sum - n * m_x * m_y;
+        let ss_xx : u32 = xx_sum - n * m_x * m_x;
 
-        return new Rational((b0.num + b1.num*x_t) * FACTOR, FACTOR);
+        let b1 : u16 = u16(ss_xy / ss_xx);
+        let b0 : u16 = m_y - b1*m_x;
+        
+
+        return new Rational(b0 + b1*x_t, 1);
     }
 }
 

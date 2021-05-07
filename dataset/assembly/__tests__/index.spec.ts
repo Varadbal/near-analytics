@@ -38,16 +38,9 @@ const doFill = (): void => {
     // min x = 1, max x = 9, avg x = 4.5 + error, pred_y(6) = 6 
 };
 
-// initialization
-    //new correct
-    //requires parameters (name, desc)
-    //minimum balance
-    //no double initialization
-// data
-    //add & get data
-// statistics
-    //correct results
-    //requires data
+/**
+ * == UNIT TESTS =========================================================
+ */
 
 describe("dataset initialization ", () => {
     beforeEach(useAnalyticsAsPredecessor);
@@ -69,7 +62,7 @@ describe("dataset initialization ", () => {
         // Act, Assert
         expect(() => {
             contract.init("", DESCRIPTION);
-        }).toThrow("Dataset name may not be blank");
+        }).toThrow("Analytics name may not be blank");
     });
 
     it("requires description not to be blank", () => {

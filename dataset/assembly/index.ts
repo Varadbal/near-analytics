@@ -1,16 +1,14 @@
-/*
- *  TODO write here 
- * Learn more about writing NEAR smart contracts with AssemblyScript:
- * https://docs.near.org/docs/roles/developer/contracts/assemblyscript
- *
- */
-
-
 import { context, logging, PersistentSet, PersistentVector, storage, u128 } from 'near-sdk-as';
 import { DATASET_KEY, DataSet } from "./models";
 import {AccountId, Data, Rational, Timestamp} from "../../types";
 
 export const MIN_ACCOUNT_BALANCE = u128.from('1000000000000000000000000'); // ONE NEAR
+
+/**
+ * == PUBLIC METHODS ==========================================================
+ *
+ * The contract's public API.
+ */
 
 /* DataSet object-related functions */
 export function init(name : AccountId, description: string): void {
@@ -72,7 +70,11 @@ export function pred_y(x : Data) : Rational {
   return DataSet.pred_y(x);
 }
 
-/* Private helper methods */
+/**
+ * == PRIVATE METHODS ==========================================================
+ *
+ * Helper classes & methods.
+ */
 
 function is_initialized(): bool {
   return storage.hasKey(DATASET_KEY);

@@ -1,28 +1,29 @@
-/*
- *  TODO write here 
- * Learn more about writing NEAR smart contracts with AssemblyScript:
- * https://docs.near.org/docs/roles/developer/contracts/assemblyscript
- *
- */
-
 import { context, logging, PersistentSet, PersistentVector, PersistentMap, storage, u128, base58, env, ContractPromiseBatch, ContractPromise} from 'near-sdk-as';
 import { Registration, Statistics, ANALYTICS_KEY, Analytics, DataSetInitArgs, DataSetNameAsArg, AddDataElementArgs, EmptyArgs, PredYArgs } from "./models";
 import { AccountId, Data, Rational } from "../../types";
 
 export const ONE_NEAR = u128.from('1000000000000000000000000'); // ONE NEAR
+export const MIN_ANALYTICS_BALANCE = ONE_NEAR;
+export const MIN_DATASET_BALANCE = u128.mul(ONE_NEAR, u128.from(2));  //TWO NEARS
 export const XCC_GAS = 30000000000000;
 
-const CODE = includeBytes("../../out/dataset.wasm")  //TODO fix
+const CODE = includeBytes("../../out/dataset.wasm")  // The other contract this one uses (dataset)
 
+/**
+ * == PUBLIC METHODS ==========================================================
+ *
+ * The contract's public API.
+ */
 
+/* Analytics initialization */
 export function init(name: string): void {
   assert(!is_initialized(), "Contract is already initialized.");
-
   // storing dataset metadata requires some storage staking (balance locked to offset cost of data storage)
   assert(
-    u128.ge(context.attachedDeposit, ONE_NEAR),
+    u128.ge(context.attachedDeposit, MIN_ANALYTICS_BALANCE),
     "Minimum account balance must be attached to initialize this contract (1 NEAR)"
   );
+  assert(name.length > 0, "Dataset name may not be blank");
 
   Analytics.create(name)
   logging.log("analytics was created")
@@ -33,11 +34,13 @@ export function get_analytics(): Analytics {
   return storage.getSome<Analytics>(ANALYTICS_KEY);
 }
 
+/* Dataset creation */
+
 export function create_dataset(name : AccountId, description : string) : void {
   assert_contract_is_initialized()
   // storing dataset metadata requires some storage staking (balance locked to offset cost of data storage)
   assert(
-    u128.ge(context.attachedDeposit, u128.mul(ONE_NEAR, u128.from(2))),
+    u128.ge(context.attachedDeposit, MIN_DATASET_BALANCE),
     "Minimum account balance must be attached to initialize a dataset (30 NEAR)"
   );
 
@@ -78,20 +81,16 @@ export function on_dataset_created(name: AccountId, owner: AccountId): void {
   let datasetCreated = results[0];
 
   // Verifying the remote contract call succeeded.
-  // https://nomicon.io/RuntimeSpec/Components/BindingsSpec/PromisesAPI.html?highlight=promise#returns-3
   switch (datasetCreated.status) {
     case 0:
-      // promise result is not complete
       logging.log("Dataset creation for [ " + full_account_for(name) + " ] is pending")
       break;
     case 1:
-      // promise result is complete and successful
       logging.log("Dataset creation for [ " + full_account_for(name) + " ] succeeded")
       datasets.add(name);
       owners.set(name, owner);
       break;
     case 2:
-      // promise result is complete and failed
       logging.log("Dataset creation for [ " + full_account_for(name) + " ] failed")
       break;
 
@@ -101,6 +100,8 @@ export function on_dataset_created(name: AccountId, owner: AccountId): void {
   }
   logging.log("Gas used: " + env.used_gas.toString());
 }
+
+/* Authorization */
 
 export function register_to_dataset(dataset : AccountId) : void {
   assert(false, "Not implemented");
@@ -118,6 +119,8 @@ export function approve_registration(registration : Registration) : void {
   assert(false, "Not implemented");
 }
 
+/* Data manipulation */
+
 export function add_data(dataset : AccountId, x : Data, y : Data) : void {
   logging.log("Attempting add_data element to dataset: " + dataset + ", with owner: " + context.predecessor + ", stored owner: " + owners.getSome(dataset));
   assert_dataset_exists(dataset);
@@ -126,6 +129,8 @@ export function add_data(dataset : AccountId, x : Data, y : Data) : void {
   let promise = datasetapi.add_element(dataset, x, y);
   promise.returnAsResult();
 }
+
+/* Analytics calls */
 
 export function get_xmin(dataset : AccountId) : void {
   logging.log("Attempting get_xmin from dataset: " + dataset);
@@ -159,8 +164,11 @@ export function get_ypred(dataset : AccountId, x : Data) : void {
   promise.returnAsResult();
 }
 
-/* Private helper functions */
-
+/**
+ * == PRIVATE METHODS ==========================================================
+ *
+ * Helper classes & methods.
+ */
 
 export class DataSetApi {
   add_element(dataset : AccountId, x : Data, y : Data) : ContractPromise {
@@ -220,6 +228,7 @@ function full_account_for(dataset: string): string {
   return dataset + "." + context.contractName;
 }
 
+/* Storage */
 
-const datasets = new PersistentSet<AccountId>("ds")
-const owners = new PersistentMap<AccountId, AccountId>("ow")    // dataset -> owner
+export const datasets = new PersistentSet<AccountId>("ds")
+export const owners = new PersistentMap<AccountId, AccountId>("ow")    // dataset -> owner
